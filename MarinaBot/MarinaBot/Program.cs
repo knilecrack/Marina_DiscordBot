@@ -1,5 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Reflection;
+﻿using System.Reflection;
 using Discord;
 using Discord.Commands;
 using Discord.Net;
@@ -10,8 +9,6 @@ using Newtonsoft.Json;
 namespace MarinaBot;
 class Program
 {
-  private const string MarinaBotToken = "MTAyNzI2MjgzNTgxMTY4MDI3OA.GdBl8N.oaWGv6NTSPeaFbgdF8sGnvdMHixTtJgsyN2VRU";
-  private const ulong BanditenKaputGuildID = 516669595629649920;
   private readonly DiscordSocketClient _client;
   // Program entry point
   static Task Main(string[] args)
@@ -20,7 +17,6 @@ class Program
     // MainAsync method and wait until it finishes (which should be never).
     return new Program().MainAsync();
   }
-
 
   // Keep the CommandService and DI container around for use with commands.
   // These two types require you install the Discord.Net.Commands package.
