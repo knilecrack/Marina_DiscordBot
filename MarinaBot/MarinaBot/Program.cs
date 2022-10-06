@@ -1,18 +1,14 @@
-﻿using System.Reactive.PlatformServices;
-using System.Reflection;
+﻿using System.Reflection;
 using Discord;
 using Discord.Commands;
 using Discord.Interactions;
-using Discord.Net;
 using Discord.WebSocket;
 using MarinaBot;
-using MarinaBot.BotModules;
 using MarinaBot.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Core;
 using Serilog.Sinks.SystemConsole.Themes;
 
 
@@ -49,7 +45,6 @@ using IHost host = Host.CreateDefaultBuilder(args)
       DefaultRunMode = Discord.Commands.RunMode.Async,
       CaseSensitiveCommands = false
     }));
-
   }).Build();
 
 
@@ -76,7 +71,8 @@ async Task RunAsync(IHost host)
 
   _client.Ready += async () =>
   {
-    await sCommands.RegisterCommandsToGuildAsync(ulong.Parse(config["guildId"]));
+    //await sCommands.RegisterCommandsToGuildAsync(ulong.Parse(config["guildId"]));
+    await sCommands.RegisterCommandsToGuildAsync(ulong.Parse(config["vladaGuild"]));
   };
 
   await _client.LoginAsync(Discord.TokenType.Bot, config["marinaBotToken"]);
