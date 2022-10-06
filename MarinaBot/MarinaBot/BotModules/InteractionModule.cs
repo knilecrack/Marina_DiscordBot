@@ -1,25 +1,20 @@
-﻿using System.Collections.Immutable;
-using System.Runtime.CompilerServices;
-using Discord;
+﻿using Discord;
 using Discord.Interactions;
-using Discord.Rest;
-using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MarinaBot.BotModules;
 public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
 {
   private const string _ytLink = @"https://www.youtube.com/watch?v=bl5q4AIGGZQ&ab_channel=OpeningThemeSongs";
-  private readonly IConfigurationRoot _configBuilder;
+  private readonly GuildIdFromConfig _idFromConfig;
   private readonly GuildInformation _guildInfo;
 
   private const ulong MarinaId = 760623372089819187;
 
 
-  public InteractionModule(IConfigurationRoot configBuilder, GuildInformation guildInfo)
+  public InteractionModule(GuildIdFromConfig idFromConfig, GuildInformation guildInfo)
   {
-    _configBuilder = configBuilder;
+    _idFromConfig = idFromConfig;
     _guildInfo = guildInfo;
   }
 
@@ -42,7 +37,7 @@ public class InteractionModule : InteractionModuleBase<SocketInteractionContext>
   [SlashCommand("gazda", "Ko je ovde gazda?")]
   public async Task HandleGazda()
   {
-    var gazda = await _guildInfo.GetGuildOwner(ulong.Parse(_configBuilder["vladaGuild"]));
+    var gazda = await _guildInfo.GetGuildOwner(_idFromConfig.GuildId());
     await RespondAsync($"Ovde je gazda: <@{gazda?.Id}>. Voli punjeno pileće belo.");
   }
 
