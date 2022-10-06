@@ -47,6 +47,7 @@ public class PrefixHandler
     if (!(message.HasCharPrefix('/', ref argPos)) || !message.HasMentionPrefix(_client.CurrentUser, ref argPos) ||
         message.Author.IsBot) return;
 
+
     var context = new SocketCommandContext(_client, message);
     await _commandSvc.ExecuteAsync(context: context, argPos, services: _services);
   }

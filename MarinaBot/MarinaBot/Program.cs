@@ -11,6 +11,9 @@ using MarinaBot.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Core;
+using Serilog.Sinks.SystemConsole.Themes;
 
 
 DiscordSocketClient _client;
@@ -22,13 +25,14 @@ var confBuilder = new ConfigurationBuilder()
   .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
   .Build();
 
+
 using IHost host = Host.CreateDefaultBuilder(args)
   .ConfigureServices((context, services) =>
   {
     services.AddSingleton(new TestSingletonService(confBuilder));
     services.AddSingleton(x => new DiscordSocketClient(new DiscordSocketConfig()
     {
-      LogLevel = LogSeverity.Verbose
+      LogLevel = LogSeverity.Debug
     }));
     services.AddSingleton(confBuilder);
 
@@ -36,6 +40,8 @@ using IHost host = Host.CreateDefaultBuilder(args)
     services.AddSingleton<InteractionHandler>();
     services.AddSingleton(x => new CommandService());
     services.AddSingleton<PrefixHandler>();
+    services.AddSingleton<LoggingService>();
+    services.AddTransient<GuildInformation>();
 
     services.AddSingleton(x => new CommandService(new CommandServiceConfig()
     {
@@ -54,62 +60,29 @@ async Task RunAsync(IHost host)
   using IServiceScope serviceScope = host.Services.CreateScope();
   IServiceProvider provider = serviceScope.ServiceProvider;
 
+  var _ = provider.GetRequiredService<LoggingService>();
+  var guildInfo = provider.GetRequiredService<GuildInformation>();
   _client = provider.GetRequiredService<DiscordSocketClient>();
   var sCommands = provider.GetRequiredService<InteractionService>();
   await provider.GetRequiredService<InteractionHandler>().InitializeAsync();
+
   var config = provider.GetRequiredService<IConfigurationRoot>();
+
+  Serilog.Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Verbose()
+    .Enrich.FromLogContext()
+    .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+    .CreateLogger();
 
   _client.Ready += async () =>
   {
-    Console.WriteLine("Bot is starting");
     await sCommands.RegisterCommandsToGuildAsync(ulong.Parse(config["guildId"]));
   };
-  sCommands.Log += Log;
 
   await _client.LoginAsync(Discord.TokenType.Bot, config["marinaBotToken"]);
-  _client.Log += Log;
-
 
   await _client.StartAsync();
   await Task.Delay(Timeout.Infinite);
 }
-
-
-
-static Task Log(LogMessage message)
-{
-  switch (message.Severity)
-  {
-    case LogSeverity.Critical:
-    case LogSeverity.Error:
-      Console.ForegroundColor = ConsoleColor.Red;
-      break;
-    case LogSeverity.Warning:
-      Console.ForegroundColor = ConsoleColor.Yellow;
-      break;
-    case LogSeverity.Info:
-      Console.ForegroundColor = ConsoleColor.White;
-      break;
-    case LogSeverity.Verbose:
-    case LogSeverity.Debug:
-      Console.ForegroundColor = ConsoleColor.DarkGray;
-      break;
-  }
-  Console.WriteLine($"{DateTime.Now,-19} [{message.Severity,8}] {message.Source}: {message.Message} {message.Exception}");
-  Console.ResetColor();
-
-  // If you get an error saying 'CompletedTask' doesn't exist,
-  // your project is targeting .NET 4.5.2 or lower. You'll need
-  // to adjust your project's target framework to 4.6 or higher
-  // (instructions for this are easily Googled).
-  // If you *need* to run on .NET 4.5 for compat/other reasons,
-  // the alternative is to 'return Task.Delay(0);' instead.
-  return Task.CompletedTask;
-}
-
-
-
-
-
 
 

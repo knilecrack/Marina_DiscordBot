@@ -16,13 +16,13 @@ public class InteractionHandler
   private readonly DiscordSocketClient _client;
   private readonly IServiceProvider _services;
 
-  public InteractionHandler(IServiceProvider services, DiscordSocketClient client, InteractionService commands)
+  public InteractionHandler(IServiceProvider services,
+    DiscordSocketClient client, InteractionService commands)
   {
     _services = services;
     _client = client;
     _commands = commands;
   }
-
 
   public async Task InitializeAsync()
   {

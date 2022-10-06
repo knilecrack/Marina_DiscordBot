@@ -16,7 +16,7 @@ public class CommandHandler
     _client = client;
   }
 
-  public async Task InstallCommandsAsync()
+  public Task InstallCommandsAsync()
   {
     // Hook the MessageReceived event into our command handler
     _client.MessageReceived += HandleCommandAsync;
@@ -29,7 +29,7 @@ public class CommandHandler
     //
     // If you do not use Dependency Injection, pass null.
     // See Dependency Injection guide for more information.
-    await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
+    return _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
                                     services: null);
   }
 
