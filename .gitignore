@@ -30,6 +30,9 @@
 *.svclog
 *.scc
 
+
+
+
 # Chutzpah Test files
 _Chutzpah*
 
@@ -295,12 +298,15 @@ ASALocalRun/
 
 # Visual Studio History (VSHistory) files
 .vshistory/
+**/.vs/*
 
 # BeatPulse healthcheck temp database
 healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
+**/bin/**
+
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
